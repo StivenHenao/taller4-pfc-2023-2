@@ -6,11 +6,13 @@
   * Profesor: Carlos A Delgado
   */
 package taller4
+import org.scalameter.measure
 import scala.collection.parallel.CollectionConverters._
-import scala.collection.parallel.immutable.ParVector
 import common._
 import org.scalameter.withWarmer
 import org.scalameter.Warmer
+
+import scala.concurrent.duration.Duration
 import scala.util.Random
 
 
@@ -229,8 +231,10 @@ object Taller4 {
     }
   }
 
-  def prodPuntoParD(v1: ParVector[Int], v2: ParVector[Int]): Int = {
-    (v1 zip v2).map({ case (i, j) => (i * j) }).sum
+  def prodPuntoParD(v1: Vector[Int], v2: Vector[Int]): Int = {
+    val resultado = v1.par.zip(v2.par).map { case (x, y) => x * y }.sum
+
+    resultado
   }
 
     def compararAlgoritmos(funcion1: (Matriz, Matriz) => Matriz, funcion2: (Matriz, Matriz) => Matriz)
@@ -252,12 +256,12 @@ object Taller4 {
       (tiempo1, tiempo2, aceleracion)
     }
 
-  def compararProdPunto(tamano: Int): (Double, Double, Double) = {
-    val v1 = vectorAlAzar(tamano, 100).par // Convierte v1 a ParVector
-    val v2 = vectorAlAzar(tamano, 100).par // Convierte v2 a ParVector
+  def compararProdPunto(tamaño: Int): (Double, Double, Double) = {
+    val v1 = vectorAlAzar(tamaño, 100)
+    val v2 = vectorAlAzar(tamaño, 100)
 
     val tiempoSecuencial = withWarmer(new Warmer.Default) measure {
-      prodPunto(v1.seq, v2.seq) // Usa v1.seq y v2.seq para convertir de nuevo a Vector para prodPunto
+      prodPunto(v1, v2)
     }
 
     val tiempoParalelo = withWarmer(new Warmer.Default) measure {
@@ -270,11 +274,10 @@ object Taller4 {
   }
 
     def main(args: Array[String]): Unit = {
-
       println(saludo())
-      println("Comparacion de rendimiento entre multMatriz y multMatrizPar")
+      /*println("Comparacion de rendimiento entre multMatriz y multMatrizPar")
       val resultados1 = for {
-        i <- 1 to 10
+        i <- 1 to 7
         m1 = matrizAlAzar(math.pow(2, i).toInt, 2)
         m2 = matrizAlAzar(math.pow(2, i).toInt, 2)
       } yield (compararAlgoritmos(multMatriz, multMatrizPar)(m1, m2), "Tamano: " + math.pow(2,i))
@@ -283,7 +286,7 @@ object Taller4 {
 
       println("Comparacion de rendimiento entre multMatrizRec y multMatrizRecPar")
       val resultados2 = for {
-        i <- 1 to 10
+        i <- 1 to 7
         m1 = matrizAlAzar(math.pow(2, i).toInt, 2)
         m2 = matrizAlAzar(math.pow(2, i).toInt, 2)
       } yield (compararAlgoritmos(multMatrizRec, multMatrizRecPar)(m1, m2), "Tamano: " + math.pow(2, i))
@@ -292,21 +295,74 @@ object Taller4 {
 
       println("Comparacion de rendimiento entre multStrassen y multStrassenPar")
       val resultados3 = for {
-        i <- 1 to 10
+        i <- 1 to 7
         m1 = matrizAlAzar(math.pow(2, i).toInt, 2)
         m2 = matrizAlAzar(math.pow(2, i).toInt, 2)
       } yield (compararAlgoritmos(multStrassen, multStrassenPar)(m1, m2), "Tamano: " + math.pow(2, i))
 
       resultados3.foreach(println)
 
-
       println("Comparación de rendimiento entre prodPunto y prodPuntoParD")
       val resultados4 = for {
         i <- 1 to 20
         tamano = math.pow(2,i+5).toInt
-      } yield (compararProdPunto(tamano), s"Tamano: $tamano")
+      } yield (compararProdPunto(tamano), s"Tamaño: $tamano")
 
       resultados4.foreach(println)
+*/
+      /*println(saludo())
+
+      println(
+        withWarmer(new Warmer.Default) measure {
+          (1 to 100000000).toArray
+        }
+      )
+      val m1 = matrizAlAzar(5, 2)
+      val m2 = matrizAlAzar(5, 2)
+      println(compararAlgoritmos(multMatriz, multMatrizPar)(m1, m2))
+
+      val matriz1: Matriz = Vector(
+        Vector(1, 2),
+        Vector(3, 4)
+      )
+
+      val matriz2: Matriz = Vector(
+        Vector(5, 6),
+        Vector(7, 8)
+      )
+      println(multMatriz(matriz1, matriz2))
+      println(multMatrizPar(matriz1, matriz2))
+      println(compararAlgoritmos(multMatriz, multMatrizPar)(matriz1, matriz2))
+
+      println(sumMatriz(matriz1, matriz2))
+      println(multMatrizRec(matriz1, matriz2))
+      println(multMatrizRecPar(matriz1, matriz2))
+      println(restaMatriz(matriz1, matriz2))
+      println(multStrassen(matriz1, matriz2))
+      println(subMatriz(matriz1, 0, 0, matriz1.size / 2))
+
+      val m4: Matriz = Vector(
+        Vector(1, 2, 3, 4),
+        Vector(5, 6, 7, 8),
+        Vector(9, 1, 2, 3),
+        Vector(4, 5, 6, 7)
+      )
+      val m5: Matriz = Vector(
+        Vector(4, 3, 2, 1),
+        Vector(8, 7, 6, 5),
+        Vector(3, 2, 1, 9),
+        Vector(7, 6, 5, 4)
+      )
+      val m6 = matrizAlAzar(8, 8)
+      println(m6)
+      println(subMatriz(m6, 0, 0, m6.size / 2))
+      println(multMatrizRec(m4, m5))
+      println(multMatrizRecPar(m4, m5))
+
+      println("Multstrassen:")
+      println(multStrassen(m4, m5))
+      println(multStrassenPar(m4,m5))
+*/
 
     }
   }
